@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Class Breakfast Checklist</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8f0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header .emoji { font-size: 3rem; }
+    .header h1 { font-size: 2rem; color: #b45309; margin: 8px 0 6px; }
+    .header p  { color: #92400e; font-size: 1rem; }
+
+    .progress-bar {
+      background: #fde68a;
+      border-radius: 20px;
+      height: 12px;
+      margin: 16px 0 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      border-radius: 20px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #92400e;
+      margin-bottom: 24px;
+    }
+
+    .checklist {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid #fde68a;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #fef3c7;
+      cursor: pointer;
+      transition: background 0.2s;
+      gap: 16px;
+    }
+
+    .item:last-child { border-bottom: none; }
+    .item:hover { background: #fffbeb; }
+
+    .item.checked { background: #f0fdf4; }
+    .item.checked .item-name { text-decoration: line-through; color: #9ca3af; }
+
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid #fbbf24;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .item.checked .checkbox {
+      background: #22c55e;
+      border-color: #22c55e;
+    }
+
+    .checkmark {
+      display: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .item.checked .checkmark { display: block; }
+
+    .item-emoji { font-size: 1.4rem; }
+
+    .item-name {
+      font-size: 1rem;
+      color: #1f2937;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .name-input {
+      border: none;
+      border-bottom: 1px dashed #fbbf24;
+      background: transparent;
+      font-size: 0.85rem;
+      color: #6b7280;
+      width: 110px;
+      text-align: right;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .name-input::placeholder { color: #d1d5db; }
+
+    .btn-reset {
+      display: block;
+      margin: 24px auto 0;
+      background: #fbbf24;
+      color: #78350f;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-reset:hover { background: #f59e0b; }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #92400e;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="emoji">🍳</div>
+    <h1>Class Breakfast</h1>
+    <p>Monday Breakfast — Sign up below!</p>
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    <div class="progress-text" id="progress-text">0 of 20 claimed</div>
+  </div>
+
+  <div class="checklist" id="checklist">
+    <!-- Items injected by JS -->
+  </div>
+
+  <button class="btn-reset" onclick="resetAll()">Reset All</button>
+
+  <div class="footer">Click an item to mark it as taken &nbsp;|&nbsp; Type your name in the box</div>
+
+</div>
+
+<script>
+  const items = [
+    { emoji: "🥐", name: "Croissants" },
+    { emoji: "🍳", name: "Scrambled Eggs" },
+    { emoji: "🥓", name: "Bacon" },
+    { emoji: "🍞", name: "Toast & Butter" },
+    { emoji: "🥞", name: "Pancakes" },
+    { emoji: "🍊", name: "Orange Juice" },
+    { emoji: "🫐", name: "Fresh Fruit Salad" },
+    { emoji: "🥛", name: "Milk" },
+    { emoji: "☕", name: "Coffee / Tea" },
+    { emoji: "🍫", name: "Nutella" },
+    { emoji: "🫙", name: "Jam & Peanut Butter" },
+    { emoji: "🧀", name: "Cheese Slices" },
+    { emoji: "🥨", name: "Bagels" },
+    { emoji: "🍌", name: "Bananas" },
+    { emoji: "🍩", name: "Donuts" },
+    { emoji: "🧁", name: "Muffins" },
+    { emoji: "🥤", name: "Smoothies" },
+    { emoji: "🥣", name: "Cereal & Granola" },
+    { emoji: "🍓", name: "Strawberries & Cream" },
+    { emoji: "🧇", name: "Waffles" },
+  ];
+
+  const list = document.getElementById('checklist');
+
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.id = 'item-' + i;
+    div.innerHTML = `
+      <div class="checkbox"><span class="checkmark">✓</span></div>
+      <span class="item-emoji">${item.emoji}</span>
+      <span class="item-name">${item.name}</span>
+      <input class="name-input" placeholder="your name" onclick="e => e.stopPropagation()" />
+    `;
+    div.addEventListener('click', (e) => {
+      if (e.target.classList.contains('name-input')) return;
+      div.classList.toggle('checked');
+      updateProgress();
+    });
+    list.appendChild(div);
+  });
+
+  function updateProgress() {
+    const checked = document.querySelectorAll('.item.checked').length;
+    const pct = (checked / items.length) * 100;
+    document.getElementById('fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `${checked} of ${items.length} claimed`;
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.item').forEach(el => el.classList.remove('checked'));
+    document.querySelectorAll('.name-input').forEach(el => el.value = '');
+    updateProgress();
+  }
+</script>
+</body>
+</html>
